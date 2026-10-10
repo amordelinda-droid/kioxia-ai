@@ -1,0 +1,18 @@
+{
+  "name": "KIOXIA AI Beta",
+  "short_name": "KIOXIA AI",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#080b14",
+  "theme_color": "#0b1020",
+  "description": "KIOXIA 285A AI technical dashboard beta",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

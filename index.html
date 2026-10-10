@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="KIOXIA AI">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <title>KIOXIA AI Beta</title>
+  <style>
+    :root{--bg:#080b14;--card:#111827;--muted:#8f9bb3;--line:#202a3b;--text:#f7f9ff;--green:#2bd576;--red:#ff5b6e;--blue:#5aa8ff;--gold:#ffc857}
+    *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#080b14,#0b1020 40%,#080b14);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+    .app{max-width:760px;margin:auto;padding:calc(14px + env(safe-area-inset-top)) 14px calc(28px + env(safe-area-inset-bottom))}
+    header{display:flex;justify-content:space-between;align-items:center;margin:4px 2px 16px}.brand{font-weight:800;font-size:22px}.beta{font-size:11px;background:#1f2a44;color:#bcd7ff;padding:5px 8px;border-radius:999px}
+    .card{background:rgba(17,24,39,.92);border:1px solid var(--line);border-radius:20px;padding:16px;margin:12px 0;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+    .hero{padding:20px}.row{display:flex;justify-content:space-between;gap:12px;align-items:center}.symbol{font-size:13px;color:var(--muted)}.price{font-size:38px;font-weight:800;letter-spacing:-1.5px;margin:5px 0}.chg{font-weight:700}.up{color:var(--green)}.down{color:var(--red)}
+    .score{width:84px;height:84px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--green) calc(var(--s)*1%),#243047 0);position:relative}.score:after{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--card)}.score b{z-index:1;font-size:24px}.score small{z-index:1;position:absolute;bottom:18px;color:var(--muted);font-size:9px}
+    h2{font-size:15px;margin:0 0 12px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.metric{background:#0c1322;border:1px solid #1c273a;border-radius:15px;padding:13px}.metric span{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}.metric b{font-size:17px}
+    canvas{width:100%;height:150px;background:#0b1220;border-radius:14px}.links{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.linkbox{text-align:center;background:#0c1322;border:1px solid #1c273a;border-radius:14px;padding:12px 7px}.linkbox span{display:block;color:var(--muted);font-size:10px}.linkbox b{display:block;margin-top:5px}
+    .portfolio input{width:100%;background:#0b1220;border:1px solid #26344d;color:white;padding:11px;border-radius:12px;font-size:16px}.label{color:var(--muted);font-size:11px;margin-bottom:5px}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .notice{font-size:11px;line-height:1.55;color:var(--muted)}button{border:0;border-radius:12px;background:#1e65d6;color:#fff;padding:10px 13px;font-weight:700}.status{font-size:11px;color:var(--muted)}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header><div class="brand">KIOXIA AI</div><div class="beta">BETA v1</div></header>
+  <section class="card hero">
+    <div class="row">
+      <div><div class="symbol">285A · KIOXIA HOLDINGS</div><div id="price" class="price">¥—</div><div id="change" class="chg">行情读取中…</div></div>
+      <div id="score" class="score" style="--s:50"><b>50</b><small>AI SCORE</small></div>
+    </div>
+    <div class="row" style="margin-top:14px"><span id="status" class="status">准备更新</span><button onclick="loadMarket()">更新行情</button></div>
+  </section>
+
+  <section class="card">
+    <h2>技术指标</h2>
+    <div class="grid">
+      <div class="metric"><span>MACD</span><b id="macd">—</b></div>
+      <div class="metric"><span>GMMA</span><b id="gmma">—</b></div>
+      <div class="metric"><span>成交量 / 20日均量</span><b id="volume">—</b></div>
+      <div class="metric"><span>趋势判断</span><b id="trend">—</b></div>
+    </div>
+    <div style="margin-top:12px"><canvas id="chart" width="700" height="260"></canvas></div>
+  </section>
+
+  <section class="card">
+    <h2>美股 / SOX 联动</h2>
+    <div class="links">
+      <div class="linkbox"><span>SanDisk · SNDK</span><b id="sndk">—</b></div>
+      <div class="linkbox"><span>Micron · MU</span><b id="mu">—</b></div>
+      <div class="linkbox"><span>SOX · ^SOX</span><b id="sox">—</b></div>
+    </div>
+  </section>
+
+  <section class="card portfolio">
+    <h2>我的持仓</h2>
+    <div class="two">
+      <div><div class="label">持股数</div><input id="shares" type="number" value="400" inputmode="numeric"></div>
+      <div><div class="label">平均成本 / 股</div><input id="cost" type="number" value="65000" inputmode="decimal"></div>
+    </div>
+    <div class="grid" style="margin-top:12px">
+      <div class="metric"><span>持仓市值</span><b id="value">—</b></div>
+      <div class="metric"><span>累计盈亏</span><b id="pnl">—</b></div>
+      <div class="metric"><span>回本距离</span><b id="breakeven">—</b></div>
+      <div class="metric"><span>AI 建议</span><b id="advice">等待行情</b></div>
+    </div>
+  </section>
+
+  <section class="card notice">
+    <b style="color:#dce7ff">Beta说明</b><br>
+    本版优先保证 iPhone / GitHub Pages 能打开。行情尝试从公开 Yahoo Finance chart 接口读取；若浏览器跨域或接口限制导致失败，会自动切换到演示数据，因此页面不会白屏。AI评分仅为规则型技术评分，不构成投资建议。
+  </section>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+let currentPrice=0, closes=[], volumes=[];
+const fmtY=n=>'¥'+Math.round(n).toLocaleString('ja-JP');
+function ema(arr,p){let k=2/(p+1),e=arr[0];return arr.map((v,i)=>i?(e=v*k+e*(1-k)):e)}
+function calcMACD(a){if(a.length<26)return {v:0,signal:0};let e12=ema(a,12),e26=ema(a,26),m=a.map((_,i)=>e12[i]-e26[i]),s=ema(m,9);return {v:m.at(-1),signal:s.at(-1)}}
+function sma(a,p){return a.slice(-p).reduce((x,y)=>x+y,0)/Math.min(p,a.length)}
+function gmma(a){if(a.length<30)return '数据不足';let short=[3,5,8,10,12,15].map(p=>ema(a,p).at(-1)),long=[30,35,40,45,50,60].map(p=>ema(a,p).at(-1));let s=short.reduce((x,y)=>x+y)/short.length,l=long.reduce((x,y)=>x+y)/long.length;return s>l?'多头':'空头'}
+function draw(a){let c=$('chart'),x=c.getContext('2d'),w=c.width,h=c.height;x.clearRect(0,0,w,h);if(!a.length)return;let min=Math.min(...a),max=Math.max(...a),pad=18;x.strokeStyle='#27344c';x.lineWidth=1;for(let i=1;i<4;i++){let y=h*i/4;x.beginPath();x.moveTo(0,y);x.lineTo(w,y);x.stroke()}x.strokeStyle='#5aa8ff';x.lineWidth=4;x.beginPath();a.forEach((v,i)=>{let px=pad+i*(w-2*pad)/(a.length-1),py=h-pad-(v-min)/(max-min||1)*(h-2*pad);i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke()}
+function portfolio(){let sh=+$('shares').value||0,cost=+$('cost').value||0;if(!currentPrice)return;let val=currentPrice*sh,p=(currentPrice-cost)*sh,d=(cost/currentPrice-1)*100;$('value').textContent=fmtY(val);$('pnl').textContent=(p>=0?'+':'')+fmtY(p);$('pnl').className=p>=0?'up':'down';$('breakeven').textContent=d<=0?'已回本':`还需 +${d.toFixed(2)}%`}
+$('shares').oninput=$('cost').oninput=portfolio;
+function scoreIt(chg,macdBull,gmmaBull,volRatio,links){let s=50;s+=Math.max(-12,Math.min(12,chg*3));s+=macdBull?10:-10;s+=gmmaBull?10:-10;s+=Math.max(-6,Math.min(6,(volRatio-1)*10));s+=Math.max(-8,Math.min(8,links*2));return Math.round(Math.max(0,Math.min(100,s)))}
+async function yahoo(symbol,range='3mo',interval='1d'){let u=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=${interval}&includePrePost=false`;let r=await fetch(u,{cache:'no-store'});if(!r.ok)throw Error(r.status);let j=await r.json(),z=j.chart.result[0],q=z.indicators.quote[0];return {meta:z.meta,close:q.close.filter(v=>v!=null),volume:q.volume.filter(v=>v!=null)}}
+function demo(){let a=[];let p=65000;for(let i=0;i<70;i++){p*=1+(Math.sin(i/5)*.004)+(Math.random()-.5)*.018;a.push(Math.round(p))}return {meta:{regularMarketPrice:a.at(-1),previousClose:a.at(-2)},close:a,volume:a.map((_,i)=>2500000+Math.round(Math.random()*2200000))}}
+async function linkChange(sym){try{let d=await yahoo(sym,'5d','1d'),a=d.close;return (a.at(-1)/a.at(-2)-1)*100}catch(e){return 0}}
+function setLink(id,v){$(id).textContent=(v>=0?'+':'')+v.toFixed(2)+'%';$(id).className=v>=0?'up':'down'}
+async function loadMarket(){
+ $('status').textContent='更新中…';
+ let d,live=true;try{d=await yahoo('285A.T')}catch(e){d=demo();live=false}
+ closes=d.close;volumes=d.volume;currentPrice=d.meta.regularMarketPrice||closes.at(-1);let prev=d.meta.previousClose||closes.at(-2),chg=(currentPrice/prev-1)*100;
+ $('price').textContent=fmtY(currentPrice);$('change').textContent=(chg>=0?'▲ +':'▼ ')+chg.toFixed(2)+'%';$('change').className='chg '+(chg>=0?'up':'down');
+ let m=calcMACD(closes),mb=m.v>m.signal,g=gmma(closes),gb=g==='多头',vr=volumes.at(-1)/(sma(volumes,20)||1);
+ $('macd').textContent=mb?'金叉 / 偏多':'死叉 / 偏空';$('macd').className=mb?'up':'down';$('gmma').textContent=g;$('gmma').className=gb?'up':'down';$('volume').textContent=vr.toFixed(2)+'×';$('trend').textContent=(mb&&gb)?'强势':'震荡 / 谨慎';
+ let [sn,mu,so]=await Promise.all([linkChange('SNDK'),linkChange('MU'),linkChange('^SOX')]);setLink('sndk',sn);setLink('mu',mu);setLink('sox',so);
+ let s=scoreIt(chg,mb,gb,vr,(sn+mu+so)/3);$('score').style.setProperty('--s',s);$('score').querySelector('b').textContent=s;$('advice').textContent=s>=75?'偏多 / 持有':s>=55?'中性偏多':s>=40?'观望':'风险偏高';
+ $('status').textContent=(live?'实时接口':'演示回退')+' · '+new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});draw(closes.slice(-60));portfolio();localStorage.setItem('kioxiaCost',$('cost').value);localStorage.setItem('kioxiaShares',$('shares').value)
+}
+$('cost').value=localStorage.getItem('kioxiaCost')||65000;$('shares').value=localStorage.getItem('kioxiaShares')||400;
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+loadMarket();setInterval(loadMarket,300000);
+</script>
+</body></html>
