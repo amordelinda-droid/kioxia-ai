@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#07101f">
 <link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon.svg">
-<title>KIOXIA AI 持仓决策版</title>
+<title>KIOXIA AI 持仓决策版 v2.1</title>
 <style>
 :root{--bg:#050a14;--card:#0d1728;--line:#20304a;--txt:#f4f7fb;--muted:#91a0b8;--g:#31dc83;--r:#ff5d73;--y:#f3c95d;--b:#55a8ff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -20,7 +20,7 @@ button,input{font:inherit;border-radius:13px;border:1px solid var(--line)}button
 details summary{cursor:pointer;color:#c9d5e7;font-weight:700}.warn{font-size:12px;color:#aab6c9;line-height:1.5}.source{font-size:11px;color:#8292aa}.pill{display:inline-block;padding:5px 8px;border-radius:12px;background:#17243b;margin:2px;font-size:12px}
 </style></head>
 <body><main>
-<header><h1>KIOXIA AI</h1><span class="badge">持仓决策 v2</span></header>
+<header><h1>KIOXIA AI</h1><span class="badge">持仓决策 v2.1</span></header>
 
 <section class="card">
 <div class="row"><div><div class="muted">285A · KIOXIA HOLDINGS</div><div class="price" id="price">--</div><div id="chg">等待行情</div></div>
@@ -42,6 +42,23 @@ details summary{cursor:pointer;color:#c9d5e7;font-weight:700}.warn{font-size:12p
 <div class="mini"><span class="muted">距离回本</span><b id="breakeven">--</b></div>
 <div class="mini"><span class="muted">今日持仓变化</span><b id="dayPnl">--</b></div>
 </div></section>
+
+<section class="card" id="actionPlan">
+<h3>我的 1,700 股行动计划</h3>
+<div class="grid">
+  <div class="mini"><span class="muted">🟢 继续持有区</span><b id="holdZone">等待行情</b></div>
+  <div class="mini"><span class="muted">🟡 反弹减仓观察区</span><b id="trimWatch">等待行情</b></div>
+  <div class="mini"><span class="muted">🟠 减仓触发价</span><b id="trimTrigger">等待行情</b></div>
+  <div class="mini"><span class="muted">🔴 止损 / 趋势破坏价</span><b id="breakPrice">等待行情</b></div>
+</div>
+<div class="mini" style="margin-top:10px;min-height:auto">
+  <span class="muted">🎯 ¥20,263 回本路线</span>
+  <b id="route">等待行情</b>
+  <div class="bar"><i id="routeBar"></i></div>
+  <div class="source" id="routeText" style="margin-top:8px">取得真实行情后自动计算。</div>
+</div>
+<p class="warn">行动区间会随20日支撑/阻力和趋势重新计算；用于辅助仓位管理，不代表保证收益或自动交易指令。</p>
+</section>
 
 <section class="card"><h3>技术指标</h3><div class="grid" id="indicators">
 <div class="mini">RSI(14)<b id="rsi">--</b></div><div class="mini">MACD<b id="macd">--</b></div>
@@ -109,6 +126,16 @@ async function loadAll(){
   $('atr').textContent=yen(A)+' / '+(A/p*100).toFixed(1)+'%';$('obv').textContent=O>0?'净累积偏正':'净累积偏负';
   $('ma').textContent=(p>m20&&m20>m50?'偏多':p<m20&&m20<m50?'偏空':'混合');$('vol').textContent=vr.toFixed(2)+'×';
   $('support').textContent=yen(sup);$('resistance').textContent=yen(res);
+  // 1700股行动计划：由当前价、20日支撑/阻力与回本价动态生成
+  let holdLow=Math.max(sup,p*0.97), holdHigh=Math.min(res,COST);
+  $('holdZone').textContent=yen(holdLow)+' ～ '+yen(Math.max(holdLow,holdHigh));
+  $('trimWatch').textContent=yen(Math.max(p,res*0.96))+' ～ '+yen(Math.min(COST,Math.max(res,p)*1.02));
+  $('trimTrigger').textContent=yen(res)+' 附近/突破失败';
+  $('breakPrice').textContent=yen(sup)+' 跌破确认';
+  let progress=Math.max(0,Math.min(100,p/COST*100));
+  $('route').textContent=yen(p)+' → '+yen(COST);
+  $('routeBar').style.width=progress+'%';
+  $('routeText').textContent='距回本还需上涨 '+pct(COST,p).toFixed(1)+'%；当前已达到回本价的 '+progress.toFixed(1)+'%。';
   let perf=r=>{let z=cleanSeries(r),cc=z.map(x=>x.c);return pct(cc.at(-1),cc.at(-2))};let ps=perf(sr),pm=perf(mr),px=perf(xr);
   $('sndk').textContent=(ps>=0?'+':'')+ps.toFixed(2)+'%';$('mu').textContent=(pm>=0?'+':'')+pm.toFixed(2)+'%';$('sox').textContent=(px>=0?'+':'')+px.toFixed(2)+'%';
   let link=(ps>0?1:-1)+(pm>0?1:-1)+(px>0?1:-1);$('link').textContent=link>=2?'偏多':link<=-2?'偏空':'分化';
