@@ -1,12 +1,10 @@
 {
-  "name": "KIOXIA AI Beta",
+  "name": "KIOXIA AI 持仓决策版",
   "short_name": "KIOXIA AI",
   "start_url": "./",
-  "scope": "./",
   "display": "standalone",
-  "background_color": "#080b14",
-  "theme_color": "#0b1020",
-  "description": "KIOXIA 285A AI technical dashboard beta",
+  "background_color": "#050a14",
+  "theme_color": "#07101f",
   "icons": [
     {
       "src": "./icon.svg",

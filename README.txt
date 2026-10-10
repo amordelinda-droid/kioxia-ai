@@ -1,17 +1,18 @@
-KIOXIA AI Beta v1 — GitHub Pages / iPhone PWA
+KIOXIA AI 持仓决策版 v2
 
-最快部署：
-1. 解压本 ZIP。
-2. 打开 GitHub 仓库 amordelinda-droid/kioxia-ai。
-3. Add file -> Upload files。
-4. 把解压后的 4 个文件（index.html / manifest.webmanifest / sw.js / icon.svg）上传到仓库根目录，Commit changes。
-5. Settings -> Pages -> Deploy from a branch -> main -> /(root) -> Save。
-6. 等 1~3 分钟后，用 Safari 打开：
-   https://amordelinda-droid.github.io/kioxia-ai/
-7. Safari 分享按钮 -> 添加到主屏幕。
+你的默认持仓：
+- 1,700 股
+- 平均成本 ¥20,263.29
+- 总成本 ¥34,447,600
 
-说明：
-- 行情优先读取 Yahoo Finance 公开 chart 接口，5分钟自动刷新。
-- 浏览器/接口若阻止跨域，会自动使用演示回退数据，保证页面可打开。
-- AI评分是规则型技术评分，仅用于测试，不构成投资建议。
-- 默认持仓：400股，成本价 65,000 日元/股；可在页面直接修改。
+上传到 GitHub：
+1. 解压 ZIP。
+2. 在 amordelinda-droid/kioxia-ai 仓库上传 index.html、manifest.webmanifest、sw.js、icon.svg。
+3. 选择覆盖同名文件并 Commit changes。
+4. 等待 GitHub Pages 约 1-3 分钟后刷新。
+5. 如果 iPhone 主屏幕仍显示旧版，完全关闭 PWA 后重开；必要时 Safari 清除该站点缓存后重新“添加到主屏幕”。
+
+重要：
+- 本版不再生成随机模拟行情。
+- 行情源失败时会明确显示“行情接口暂不可用”。
+- 技术决策为规则模型，仅作辅助，不构成保证收益的投资建议。
